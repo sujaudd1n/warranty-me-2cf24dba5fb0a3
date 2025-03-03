@@ -1,0 +1,6 @@
+{
+  "extends": [
+    "next/bable",
+    "next/core-web-vitals"
+  ]
+}
