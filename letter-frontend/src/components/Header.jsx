@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { AuthContext } from "./AuthContext";
 import ProfileDropdown from "./ProfileDropdown";
-import { auth } from "./firebase";
+import { auth } from "../lib/firebase";
 import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "firebase/auth";
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 export default function Header() {
-    let [user, setUser] = useState(null);
+    let [user, setUser] = useContext(AuthContext);
     onAuthStateChanged(auth, (user) => {
         if (user) {
             setUser(user);

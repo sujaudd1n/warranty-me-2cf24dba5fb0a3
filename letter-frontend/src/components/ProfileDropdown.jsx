@@ -3,7 +3,7 @@
 import { useContext, useState } from "react";
 import Link from "next/link";
 import ProfilePic from "./ProfilePic";
-import { auth } from "./firebase";
+import { auth } from "../lib/firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 
 import {
@@ -25,17 +25,10 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { AuthContext } from "./AuthContext";
 
 export default function ProfileDropdown() {
-    let [user, setUser] = useState(null);
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            setUser(user);
-        }
-        else {
-            setUser(null);
-        }
-    })
+    let [user, setUser] = useContext(AuthContext);
 
     if (user) {
         return <LoggedInUserDropDown user={user} />
