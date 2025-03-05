@@ -41,6 +41,7 @@ export default function ProfileDropdown() {
 function LoggedInUserDropDown({ user }) {
     function logout() {
         signOut(auth);
+        localStorage.removeItem("credential")
     }
     return (
         <DropdownMenu>

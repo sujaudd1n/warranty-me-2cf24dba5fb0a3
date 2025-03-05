@@ -1,7 +1,7 @@
 export default function Footer() {
     return (
-        <footer>
-            copyright
+        <footer className="absolute bottom-0 p-2">
+            &copy; {new Date().getFullYear()} LetterApp
         </footer>
     )
 }
