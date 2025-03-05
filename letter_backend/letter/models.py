@@ -4,11 +4,13 @@ import time
 from django.db import models
 from django.utils.text import slugify
 
+
 class Letter(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
-    user_id = models.CharField(max_length=255)  # google user ID
+    user_id = models.CharField(max_length=255)  # firebase user ID
     is_draft = models.BooleanField(default=True)
+    drive_id = models.CharField(max_length=512, null=True, blank=True)
     slug = models.SlugField(max_length=300, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -18,23 +20,17 @@ class Letter(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            self.slug = (
-                slugify(self.title) + "-" + self.compute_slug(self.title)
-            )
+            self.slug = slugify(self.title) + "-" + self.compute_slug(self.title)
         else:
             original = Letter.objects.get(pk=self.pk)
             if original.title != self.title:
-                self.slug = (
-                    slugify(self.title)
-                    + "-"
-                    + self.compute_slug(self.title)
-                )
+                self.slug = slugify(self.title) + "-" + self.compute_slug(self.title)
         super().save(*args, **kwargs)
 
     def compute_slug(self, title):
-        return hashlib.sha256(
-            title.encode() + str(time.time()).encode()
-        ).hexdigest()[:6]
+        return hashlib.sha256(title.encode() + str(time.time()).encode()).hexdigest()[
+            :6
+        ]
 
     def json(self):
         return {
@@ -42,6 +38,12 @@ class Letter(models.Model):
             "slug": self.slug,
             "content": self.content,
             "is_draft": self.is_draft,
+            "drive_id": self.drive_id,
             "created_at": self.created_at,
             "modified_at": self.modified_at,
         }
+
+
+class Cred(models.Model):
+    user_id = models.CharField(max_length=255, unique=True)  # firebase user ID
+    credential = models.TextField(default="")

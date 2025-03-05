@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "letter",
     "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -49,6 +51,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "letter.middleware.GlobalExceptionMiddleware"
 ]
 
 ROOT_URLCONF = "letter_backend.urls"
@@ -126,3 +129,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+
+
+GOOGLE_OAUTH2_CLIENT_ID = "965332094860-ao89q2ltd44noc6dobkfd30tun7pgae7.apps.googleusercontent.com"
+GOOGLE_OAUTH2_CLIENT_SECRET = None # Add client secret
+GOOGLE_OAUTH2_REDIRECT_URI = 'http://localhost:8000/api/v1/auth/callback'
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' # for localhost development
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = 'True'
