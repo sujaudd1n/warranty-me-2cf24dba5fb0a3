@@ -1,3 +1,6 @@
 migrations
 __pycache__
 db.sqlite3
+credentials.json
+service.json
+token.json

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -131,8 +133,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 
-GOOGLE_OAUTH2_CLIENT_ID = "965332094860-ao89q2ltd44noc6dobkfd30tun7pgae7.apps.googleusercontent.com"
-GOOGLE_OAUTH2_CLIENT_SECRET = None # Add client secret
-GOOGLE_OAUTH2_REDIRECT_URI = 'http://localhost:8000/api/v1/auth/callback'
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' # for localhost development
-os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = 'True'
+GOOGLE_OAUTH2_CLIENT_ID = os.environ.get("GOOGLE_OAUTH2_CLIENT_ID")
+GOOGLE_OAUTH2_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH2_CLIENT_SECRET")
+GOOGLE_OAUTH2_REDIRECT_URI =  'http://localhost:8000/api/v1/auth/callback'
