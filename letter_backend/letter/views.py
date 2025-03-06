@@ -92,7 +92,6 @@ class RUDLetter(View):
                 "Letter not found", f"The letter with slug {slug} does not exist", 404
             )
         except ValidationError as e:
-            raise e
             return error("Invalid input", "Unable to validate new article", 400)
 
     def delete(self, request, slug):
@@ -138,7 +137,6 @@ class SaveToDriveView(View):
             letter.save()
             return JsonResponse({"drive_id": letter.drive_id})
         except Exception as e:
-            raise e
             return error("error", "error", 500)
 
 

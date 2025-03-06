@@ -29,16 +29,13 @@ class GlobalExceptionMiddleware:
                 uid = decoded["uid"]
                 request.session["uid"] = uid
                 request.session.save()
-                print(uid)
             except Exception as e:
-                raise e
                 return error("Credential error", "Invalid credential", 400)
             data["uid"] = uid
             request._body = json.dumps(data)
         return self.get_response(request)
 
     def process_exception(self, request, exception):
-        raise exception
         response = JsonResponse(
             {
                 "error": "Internal Server Error",
