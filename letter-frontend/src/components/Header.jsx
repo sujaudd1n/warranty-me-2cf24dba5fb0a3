@@ -19,19 +19,11 @@ export default function Header() {
     })
     async function toggleSignIn() {
         const provider = new GoogleAuthProvider();
-        provider.addScope('https://www.googleapis.com/auth/drive');
         signInWithPopup(auth, provider)
             .then(async (result) => {
-                const credential = await GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
-                const user = result.user;
-                console.log('credential', credential)
+                console.log("Login succeeded")
             }).catch((error) => {
                 console.log(error)
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                const email = error.customData.email;
-                const credential = GoogleAuthProvider.credentialFromError(error);
             });
     }
 

@@ -118,7 +118,6 @@ function Letter({ letter, letters, setLetters }) {
             const res = await save_to_drive(letter.slug);
             if (res) {
               const id = res.drive_id;
-              console.log(id);
               // let cl = letters.find(l => l.slug == letter.slug)
               let cl = letter;
               cl.drive_id = id;

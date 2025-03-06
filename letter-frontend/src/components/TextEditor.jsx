@@ -22,7 +22,6 @@ export default function TextEditor() {
       is_draft: false,
       credential: { idToken: await auth.currentUser.getIdToken() }
     }
-    console.log(body)
     fetch(ENDPOINT + "api/v1/letters", {
       method: "POST",
       body: JSON.stringify(body)

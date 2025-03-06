@@ -21,7 +21,6 @@ export default function SingleLetter({ slug }) {
                 })
             })
             const letter = await res.json();
-            console.log(letter)
             setLetter(letter);
         }
         f()

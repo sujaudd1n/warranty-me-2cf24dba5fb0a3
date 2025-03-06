@@ -50,7 +50,6 @@ export async function save_to_drive(slug) {
   }
   else {
     let data = await res.json();
-    console.log(data)
     window.location.replace(data.url);
   }
 }
