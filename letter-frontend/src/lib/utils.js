@@ -6,7 +6,8 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export const ENDPOINT = "http://localhost:8000/api/v1/letter/"
+// export const ENDPOINT = "http://localhost:8000/api/v1/letter/"
+export const ENDPOINT = "https://api.sujauddin.me/api/v1/letter/"
 
 export async function get_all_letters() {
   if (!auth.currentUser)
