@@ -25,10 +25,10 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { AuthContext } from "./AuthContext";
+import { useAuth } from "./AuthProvider";
 
 export default function ProfileDropdown() {
-    let [user, setUser] = useContext(AuthContext);
+    let [user, setUser] = useAuth();
 
     if (user) {
         return <LoggedInUserDropDown user={user} />

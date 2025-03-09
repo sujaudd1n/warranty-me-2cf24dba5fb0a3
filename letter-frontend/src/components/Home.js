@@ -1,8 +1,7 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
-import { AuthContext } from "./AuthContext";
 import Link from "next/link";
 import { save_to_drive } from "@/lib/utils";
 import { delete_letter } from "@/lib/utils";
@@ -15,10 +14,11 @@ import { Trash2 } from "lucide-react";
 
 import { get_all_letters } from "@/lib/utils";
 import { toast } from "sonner";
+import { useAuth } from "./AuthProvider";
 
 
 export default function Home() {
-  const [user, setUser] = useContext(AuthContext);
+  const [user, setUser] = useAuth();
   const [letters, setLetters] = useState([]);
 
   useEffect(() => {

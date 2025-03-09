@@ -3,22 +3,22 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
-import { useContext } from "react";
-import { AuthContext } from "@/components/AuthContext";
 import { ENDPOINT } from "@/lib/utils";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function SingleLetter({ slug }) {
-    const [user, setUser] = useContext(AuthContext);
+    const [user, setUser] = useAuth();
     const [letter, setLetter] = useState({});
     useEffect(() => {
         if (!auth.currentUser)
             return;
+
         async function f() {
-            const res = await fetch(ENDPOINT + "api/v1/read-letters/" + slug, {
-                method: "post",
-                body: JSON.stringify({
-                    credential: { idToken: await auth.currentUser.getIdToken() }
-                })
+            const idToken = await auth.currentUser.getIdToken();
+            const res = await fetch(ENDPOINT + "letters/" + slug, {
+                headers: {
+                    Authorization: `Bearer ${idToken}`
+                },
             })
             const letter = await res.json();
             setLetter(letter);

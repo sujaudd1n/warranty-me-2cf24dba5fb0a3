@@ -2,13 +2,8 @@
 
 import Header from "@/components/Header";
 import dynamic from "next/dynamic";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../components/AuthContext";
-import Script from "next/script";
 import Footer from "./Footer";
-import { ProgressBar, ProgressBarProvider } from "react-transition-progress"
-// import Cookies from "js-cookie";
-// import { ThemeProvider } from "./theme-provider";
+// import { ProgressBar, ProgressBarProvider } from "react-transition-progress"
 import { Toaster } from "./ui/sonner";
 
 export const DynamicAuthProvider = dynamic(() => import("./AuthProvider"), {

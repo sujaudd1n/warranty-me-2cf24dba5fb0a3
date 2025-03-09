@@ -6,17 +6,18 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export const ENDPOINT = "http://localhost:8000/"
+export const ENDPOINT = "http://localhost:8000/api/v1/letter/"
 
 export async function get_all_letters() {
   if (!auth.currentUser)
     return [];
-  const res = await fetch(ENDPOINT + "api/v1/all-letters", {
-    method: "post",
-    body: JSON.stringify({
-      credential: { idToken: await auth.currentUser.getIdToken() }
-    })
+  const idToken = await auth.currentUser.getIdToken();
+  const res = await fetch(ENDPOINT + "letters", {
+    headers: {
+      Authorization: `Bearer ${idToken}`
+    }
   })
+
   const data = await res.json();
   return data.data;
 }
@@ -24,11 +25,12 @@ export async function get_all_letters() {
 export async function delete_letter(slug) {
   if (!auth.currentUser)
     return false;
-  const res = await fetch(ENDPOINT + "api/v1/letters/" + slug, {
+  const idToken = await auth.currentUser.getIdToken();
+  const res = await fetch(ENDPOINT + "letters/" + slug, {
     method: "delete",
-    body: JSON.stringify({
-      credential: { idToken: await auth.currentUser.getIdToken() }
-    })
+    headers: {
+      Authorization: `Bearer ${idToken}`
+    },
   })
   if (res.ok) return true;
   return false;
@@ -37,11 +39,15 @@ export async function delete_letter(slug) {
 export async function save_to_drive(slug) {
   if (!auth.currentUser)
     return false;
-  const res = await fetch(ENDPOINT + "api/v1/save-to-drive", {
+
+  const idToken = await auth.currentUser.getIdToken();
+  const res = await fetch(ENDPOINT + "save-to-drive", {
     method: "post",
+    headers: {
+      Authorization: `Bearer ${idToken}`
+    },
     body: JSON.stringify({
       slug: slug,
-      credential: { idToken: await auth.currentUser.getIdToken() }
     })
   });
   if (res.ok) {

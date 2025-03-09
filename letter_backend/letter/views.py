@@ -1,5 +1,6 @@
 import json
 import os
+from functools import wraps
 from io import BytesIO
 from django.views import View
 from django.http import JsonResponse
@@ -18,24 +19,44 @@ from googleapiclient.http import MediaIoBaseUpload
 from .models import Letter, Cred
 from .helper import error
 
+import firebase_admin
+from firebase_admin import auth
+from firebase_admin import credentials
 
-@method_decorator(csrf_exempt, name="dispatch")
-class AllListLetter(View):
-    def post(self, request, *args, **kwargs):
-        body = json.loads(request.body)
-        letters = Letter.objects.all().order_by("-created_at")
+cred = credentials.Certificate("letter-service.json")
+default_app = firebase_admin.initialize_app(cred)
+
+
+def firebase_login_required(view):
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        try:
+            idToken = request.headers.get("Authorization").split("Bearer ")[-1]
+        except:
+            return error("Token error", "Token not found", 401)
+        try:
+            user = auth.verify_id_token(idToken)
+        except:
+            return error("Token error", "Token not valid", 401)
+        request.user = user
+        return view(request, *args, **kwargs)
+    return wrapper
+
+
+@method_decorator([csrf_exempt, firebase_login_required], name="dispatch")
+class ListLetter(View):
+    def get(self, request, *args, **kwargs):
+        letters = Letter.objects.filter(user_id=request.user["uid"]).order_by("-created_at")
         response_data = [
-            letter.json() for letter in letters if letter.user_id == body["uid"]
+            letter.json() for letter in letters
         ]
         return JsonResponse({"data": response_data})
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class ListLetter(View):
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
-            user_id = data["uid"]
+            user_id = request.user["uid"]
             title = data["title"]
             content = data["content"]
 
@@ -54,14 +75,12 @@ class ListLetter(View):
             )
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class ReadLetter(View):
-    def post(self, request, slug):
-        data = json.loads(request.body)
-        user_id = data["uid"]
+@method_decorator([csrf_exempt, firebase_login_required], name="dispatch")
+class RUDLetter(View):
+    def get(self, request, slug):
         try:
             letter = Letter.objects.get(slug=slug)
-            if letter.user_id != user_id:
+            if letter.user_id != request.user["uid"]:
                 return error("Invalid credential", f"Invalid credential", 404)
             return JsonResponse(letter.json())
         except ObjectDoesNotExist:
@@ -70,14 +89,11 @@ class ReadLetter(View):
             )
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class RUDLetter(View):
     def put(self, request, slug):
         try:
             letter = Letter.objects.get(slug=slug)
             data = json.loads(request.body)
-
-            user_id = data["uid"]
+            user_id = request.user["uid"]
 
             if letter.user_id != user_id:
                 return error("Invalid credential", f"Invalid credential", 404)
@@ -95,11 +111,9 @@ class RUDLetter(View):
             return error("Invalid input", "Unable to validate new article", 400)
 
     def delete(self, request, slug):
-        data = json.loads(request.body)
-        user_id = data["uid"]
+        user_id = request.user["uid"]
         try:
             letter = Letter.objects.get(slug=slug)
-
             if letter.user_id != user_id:
                 return error("Invalid credential", f"Invalid credential", 404)
         except ObjectDoesNotExist:
@@ -110,12 +124,12 @@ class RUDLetter(View):
         return JsonResponse({"message": "Letter deleted successfully"})
 
 
-@method_decorator(csrf_exempt, name="dispatch")
+@method_decorator([csrf_exempt, firebase_login_required], name="dispatch")
 class SaveToDriveView(View):
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
-            user_id = data["uid"]
+            user_id = request.user["uid"]
             slug = data["slug"]
             letter = Letter.objects.get(slug=slug)
             if letter.user_id != user_id:
@@ -125,7 +139,7 @@ class SaveToDriveView(View):
 
             if not Cred.objects.filter(user_id=user_id).exists():
                 return JsonResponse(
-                    {"url": f"http://localhost:8000/api/v1/auth/google?uid={user_id}"},
+                    {"url": f"http://localhost:8000/api/v1/letter/auth/google?uid={user_id}"},
                     status=302,
                 )
             else:
@@ -137,6 +151,7 @@ class SaveToDriveView(View):
             letter.save()
             return JsonResponse({"drive_id": letter.drive_id})
         except Exception as e:
+            raise e
             return error("error", "error", 500)
 
 

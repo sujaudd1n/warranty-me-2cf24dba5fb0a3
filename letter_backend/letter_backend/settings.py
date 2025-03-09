@@ -135,4 +135,4 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 GOOGLE_OAUTH2_CLIENT_ID = os.environ.get("GOOGLE_OAUTH2_CLIENT_ID")
 GOOGLE_OAUTH2_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH2_CLIENT_SECRET")
-GOOGLE_OAUTH2_REDIRECT_URI =  'http://localhost:8000/api/v1/auth/callback'
+GOOGLE_OAUTH2_REDIRECT_URI =  'http://localhost:8000/api/v1/letter/auth/callback'

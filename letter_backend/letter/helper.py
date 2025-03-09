@@ -10,3 +10,4 @@ def error(error, message, status_code):
         },
         status=status_code,
     )
+

@@ -1,8 +1,9 @@
 migrations
 __pycache__
 db.sqlite3
+.*swp
 
 credentials.json
-service.json
+*service.json
 token.json
 .env

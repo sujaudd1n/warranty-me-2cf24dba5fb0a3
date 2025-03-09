@@ -9,24 +9,24 @@ import { ENDPOINT } from '@/lib/utils';
 import { toast } from 'sonner';
 import { redirect, useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { useContext } from 'react';
-import { AuthContext } from '@/components/AuthContext';
+import { useAuth } from '@/components/AuthProvider';
 
 export default function EditEditor({ slug }) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [user, setUser] = useContext(AuthContext);
+    const [user, setUser] = useAuth();
 
     const router = useRouter()
     useEffect(() => {
         if (!auth.currentUser)
             return;
+
         async function f() {
-            const res = await fetch(ENDPOINT + "api/v1/read-letters/" + slug, {
-                method: "post",
-                body: JSON.stringify({
-                    credential: { idToken: await auth.currentUser.getIdToken() }
-                })
+            const idToken = await auth.currentUser.getIdToken();
+            const res = await fetch(ENDPOINT + "letters/" + slug, {
+                headers: {
+                    Authorization: `Bearer ${idToken}`
+                },
             })
             const letter = await res.json();
             setContent(letter.content);
@@ -41,10 +41,13 @@ export default function EditEditor({ slug }) {
             title: title,
             content: content,
             is_draft: false,
-            credential: { idToken: await auth.currentUser.getIdToken() }
         }
-        fetch(ENDPOINT + "api/v1/letters/" + slug, {
+        const idToken = await auth.currentUser.getIdToken();
+        fetch(ENDPOINT + "letters/" + slug, {
             method: "put",
+            headers: {
+                Authorization: `Bearer ${idToken}`
+            },
             body: JSON.stringify(body)
         })
             .then(async (res) => {

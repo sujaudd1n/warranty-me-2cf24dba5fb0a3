@@ -20,10 +20,13 @@ export default function TextEditor() {
       title: title,
       content: content,
       is_draft: false,
-      credential: { idToken: await auth.currentUser.getIdToken() }
     }
-    fetch(ENDPOINT + "api/v1/letters", {
+    const idToken = await auth.currentUser.getIdToken();
+    fetch(ENDPOINT + "letters", {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`
+      },
       body: JSON.stringify(body)
     })
       .then(async (res) => {
